@@ -1,0 +1,17 @@
+#loading {
+    width: auto;
+    margin: auto;
+    display: none;
+}
+#loading.active {
+    display: block;
+}
+
+
+#dashboardImage {
+    width: 100%;
+}
+
+h2.dashboardTitle {
+    text-align: center;
+}

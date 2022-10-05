@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+    <title>Tableau Image Embed Example</title>
+    <!-- Tableau REST API helper -->
+    <script src="main.js" type="text/javascript"></script>
+    <!-- Accordion CSS -->
+    <link rel="stylesheet" href="accordian.css">
+    <!-- Forms CSS -->
+    <link rel="stylesheet" href="forms.css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+    <!-- Table CSS -->
+    <link rel="stylesheet" href="tables.css">
+    <!-- Section 3's CSS -->
+    <link rel="stylesheet" href="images.css">
+</head>
+<body>
+    <nav class="accordion arrows">
+        <header class="box">
+          <label for="acc-close" class="box-title">Tableau Image Embed Example</label>
+        </header>
+        
+        <!--  Section 1 -->
+        <input type="radio" name="accordion" id="cb1" />
+        <section class="box">
+          <label class="box-title" for="cb1">Step 1: Configuration</label>
+          <label class="box-close" for="acc-close"></label>
+          <div class="box-content">
+            <div class="form-style-8">
+                <h2>Tableau Server / Cloud details</h2>
+                <form id="configForm">
+                    <input type="url" name="tableauUrl" placeholder="https://us-east-1.online.tableau.com" />
+                    <input type="text" name="siteName" placeholder="site name" />
+                    <input type="text" name="patName" placeholder="PAT name"  />
+                    <input type="password" name="patSecret" placeholder="PAT secret"/>
+                    <input type="submit" name="saveConfig" id="saveConfigButton" value="Authenticate" />
+                </form>
+            </div>
+          </div>
+        </section>
+        
+        <!--  Section 2 -->
+        <input type="radio" name="accordion" id="cb2" />
+        <section class="box">
+          <label class="box-title" for="cb2">Step 2: Select a Dashboard</label>
+          <label class="box-close" for="acc-close"></label>
+          <div class="box-content">
+            <div class="form-style-8">
+                <h2>Tableau Search Bar</h2>
+                <form id="searchForm">
+                    <input type="text" name="searchBar" placeholder="search term">
+                    <input type="submit" id="searchButton" value="Search" />
+                </form>
+            </div>
+            <img id="loading" src="loading.gif"/> 
+            <table class="styled-table">
+              <thead>
+                <tr>
+                    <th>Dashboard</th>
+                    <th>Workbook</th>
+                    <th>Created By</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardList">
+              </tbody>
+            </table>
+          </div>
+        </section>
+        
+        <!--  Section 3 -->
+        <input type="radio" name="accordion" id="cb3" />
+        <section class="box">
+          <label class="box-title" for="cb3">Step 3: Display Dashboard as Image</label>
+          <label class="box-close" for="acc-close"></label>
+          <div class="box-content">
+            <h2 id="dashboardName" class="dashboardTitle"></h2>
+            <img id="dashboardImage" />
+          </div>
+        </section>
+    
+        <input type="radio" name="accordion" id="acc-close" />
+    </nav>
+    
+    <!--  Initialize the web app  -->
+    <script type="text/javascript">
+      let app = MyApp();
+      app.init();
+    </script>
+</body>
+</html>
