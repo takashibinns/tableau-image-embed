@@ -12,4 +12,4 @@ app.use(express.static('public'));
 const routeAuth = require('./backend/router');
 app.use('/api', routeAuth);
 
-app.listen(PORT, () => console.log(`Server listening on port: ${PORT}`));
+app.listen(port, () => console.log(`Server listening on port: ${port}`));
