@@ -88,7 +88,7 @@ const TableauHelper = {
         // URL & payload
         const config = {
             method: 'GET',
-            url: `${url}/api/-/search?terms=${searchTerm}&filter=type:eq:view`,
+            url: `${url}/api/-/search?terms=${searchTerm}&filter=type:eq:view&limit=100`,
             headers: getHeaders(token)
         }
 
