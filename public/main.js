@@ -105,6 +105,20 @@ const MyApp = () => {
         return myHeaders;
     }
 
+    //  Helper function to derive the URL for a given dashboard
+    const getDashboardLink = (view) => {
+        
+        //  Need to get the tableau URL
+        let config = getStorage(storage.formData);
+
+        //  URL is slightly different, when using the default site (tableau server only)
+        if (config.siteName.length > 0) {
+            return `${config.tableauUrl}/#/site/${config.siteName}/views/${view.content.path}`
+        } else {
+            return `${config.tableauUrl}/#/views/${view.content.path}`
+        }
+    }
+
     //  Helper function to clear an HTML element's children
     const removeAllChildNodes = (parent) => {
         while (parent.firstChild) {
@@ -216,6 +230,7 @@ const MyApp = () => {
                 row.appendChild(c3);
                 row.attributes['dashboardId'] = view.content.luid;
                 row.attributes['dashboardTitle'] = view.content.title;
+                row.attributes['link'] = getDashboardLink(view);
                 row.onclick = selectDashboard;
 
                 //  Append the row to the table
@@ -242,6 +257,7 @@ const MyApp = () => {
         let row = event.target.parentNode;
         const dashboardId= row.attributes['dashboardId'];
         const dashboardTitle= row.attributes['dashboardTitle'];
+        const dashboardLink= row.attributes['link'];
         if (!dashboardId){
             console.log("Error: no dashboard id found for this view")
             return;
@@ -273,6 +289,12 @@ const MyApp = () => {
             //  Populate the image in Section 3' <img>
             let section3image = document.getElementById(section3.img);
             section3image.src = results;
+
+            //  Add click handler, so users get sent to the full version of the dashboard
+            section3image.onclick = (event) => {
+                window.open(dashboardLink,'_blank');
+            }
+            section3image.style.cursor = 'pointer';
 
             //  Populate the dashboard's title
             let section3title = document.getElementById(section3.title);
