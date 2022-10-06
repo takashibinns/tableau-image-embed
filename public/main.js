@@ -105,6 +105,16 @@ const MyApp = () => {
         return myHeaders;
     }
 
+    //  Helper function to ensure a valid URL for tableau
+    const verifyUrl = (url) => {
+        
+        //  Create a URL object
+        var a = new URL(url)
+
+        //  Return just the protocol + host (ie: "https://us-west-2.online.tableau.com")
+        return `${a.protocol}//${a.host}`
+    }
+
     //  Helper function to derive the URL for a given dashboard
     const getDashboardLink = (view) => {
         
@@ -139,7 +149,7 @@ const MyApp = () => {
         //  Get the inputs from the form
         let formData = new FormData(document.getElementById(section1.form));
         const data  = {
-            tableauUrl: formData.get('tableauUrl'),
+            tableauUrl: verifyUrl(formData.get('tableauUrl')),
             siteName: formData.get('siteName'),
             pat: {
                 name: formData.get('patName'),

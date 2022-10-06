@@ -65,6 +65,7 @@ const TableauHelper = {
                 }
             }
         }
+        console.log(config)
 
         //  Make the API call
         let response = await sendRequest(config);
