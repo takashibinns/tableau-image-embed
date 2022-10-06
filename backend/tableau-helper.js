@@ -1,10 +1,11 @@
 const axios = require('axios');
+const { json } = require('body-parser');
 
 //  Placeholders for shared variables
 const apiVersion = '3.15';
 
-//  Generate headers for API calls
-const getHeaders = function(token=null) {
+//  Generate headers for API calls to Tableau
+const getHeaders = (token=null) => {
     let headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -15,47 +16,37 @@ const getHeaders = function(token=null) {
     return headers;
 }
 
-//  Base URL for Tableau Server/Cloud
-const getBaseUrl = (siteId) => {
-    //  REST API calls have a different base url, depending on what site is being used
-    if (siteId && siteId.length>0){
-        //  Using a named site
-        return `${tableauBaseUrl}/api/${tableauApiVersion}/sites/${siteId}`;
-    } else {
-        //  Using the default site
-        return `${tableauBaseUrl}/api/${tableauApiVersion}`;
-    }
-}
-
-//  Safely get properties of a JSON object
-function getProps(fn, defaultVal) {
-    try {
-      return fn();
-    } catch (e) {
-      return defaultVal;
-    }
-}
-
 //  Make API call asynchronously
 const sendRequest = async (options) => {
 
+    //  Try to make the API call
     try {
         let response = await axios(options);
         return response.data;
     } catch (error) {
-        const msg = `Error: Tableau threw an error while making a REST API call`
-        console.log(msg)
-        let errorData = getProps(error.response.data.error, {'detail': msg})
-        console.log(error.response)
+
+        //  API call failed, let's look for more details
+        let msg = 'Error: Tableau threw an error while making a REST API call';
+        try {
+            //  Tableau should return an error message in the payload's response
+            console.log(error.response.data);
+            msg = error.response.data.error.summary + ': ' + error.response.data.error.detail;
+        } catch {
+            //  We got back a data structure that we weren't expecting, log the entire response
+            console.log('Error: Could not parse error message returned from API call')
+            console.log(JSON.stringify(error))
+        }
+
+        //  Return the error message, to display for the end user
         return {
-            'error': errorData
+            "error": msg
         }
     }
 }
 
-//  Define a class that
-const TableauHelper =
- {
+//  Define a class that handles making the Tableau REST API calls
+const TableauHelper = {
+
     //  Authenticate to Tableau Cloud/Server
     login: async (url, siteName, patName, patSecret) => {
 
@@ -78,18 +69,15 @@ const TableauHelper =
         //  Make the API call
         let response = await sendRequest(config);
 
-        //  Handle the response
+        //  Check for errors
         if (response.error){
-            return response.error;
+            return response;
         } else {
-            // Get the api token and site id
-            const token = response.credentials.token;
-            const siteId = response.credentials.site.id;
 
-            // Return the complete data object
+            // Return the api token & site id
             return {
-                'token': token,
-                'siteId': siteId
+                'token': response.credentials.token,
+                'siteId': response.credentials.site.id
             }
         }
     },
@@ -107,13 +95,21 @@ const TableauHelper =
         //  Make the API call
         let response = await sendRequest(config);
 
-        //  Handle the response
+        //  Check for errors
         if (response.error){
-            return response.error;
+            return response;
         } else {
 
             // Return only views that have a type of 'dashboard'
-            return response.hits.items.filter(view => view.content.sheetType==='dashboard')
+            try {
+                return response.hits.items.filter(view => view.content.sheetType==='dashboard')
+            } catch (error) {
+                //  We got results back from the API, but not in the structure we expected
+                console.log(error)
+                console.log(JSON.stringify(response))
+                //  Return an empty list for now...
+                return []
+            }
         }
 
     },
@@ -132,14 +128,14 @@ const TableauHelper =
         //  Make the API call
         let response = await sendRequest(config);
 
-        //  Handle the response
+        //  Check for errors
         if (response.error){
-            return response.error;
+            return response;
         } else {
+            //  Convert the arraybuffer to base64, and specify that this is PNG data
             return `data:image/png;base64,${response.toString('base64')}`;
         }
     }
 }
-
 
 module.exports = TableauHelper;

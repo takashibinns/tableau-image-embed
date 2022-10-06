@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="tables.css">
     <!-- Section 3's CSS -->
     <link rel="stylesheet" href="images.css">
+    <!-- Modal window's CSS -->
+    <link rel="stylesheet" href="modal.css">
 </head>
 <body>
     <nav class="accordion arrows">
@@ -80,6 +82,16 @@
     
         <input type="radio" name="accordion" id="acc-close" />
     </nav>
+
+    <!--  Modal window  -->
+    <div class="modal" id="modal-popup">
+      <div id="modal-bg" class="modal-bg modal-exit"></div>
+      <div class="modal-container">
+        <h1 id="modal-title">Amazing Modal</h1>
+        <p id="modal-message">Pure Vanilla JavaScript</p>
+      </div>
+      </div>
+    </div>
     
     <!--  Initialize the web app  -->
     <script type="text/javascript">

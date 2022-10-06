@@ -2,12 +2,18 @@
 //  Define our web app as a module
 const MyApp = () => {
 
-    //  Constants from index.html
+    /****************************************************************/
+    /*  MyApp manipulates HTML elements from index.html             */
+    /*  The below constants, define the IDs of specific elements    */
+    /****************************************************************/
+
+    //  Step 1: Configuration
     const section1 = {
         input: 'cb1',
         form: 'configForm',
         button: 'saveConfigButton'
     }
+    //  Step 2: Select a dashboard
     const section2 = {
         input: 'cb2',
         form: 'searchForm',
@@ -15,11 +21,26 @@ const MyApp = () => {
         button: 'searchButton',
         tableBody: 'dashboardList'
     }
+    //  Step 3: Display dashboard as image
     const section3 = {
         input: 'cb3',
         title: 'dashboardName',
         img: 'dashboardImage'
     }
+    //  Modal popup window
+    const modal = {
+        container: 'modal-popup',
+        title: 'modal-title',
+        message: 'modal-message',
+        background: 'modal-bg'
+    }
+
+    /******************************************************************/
+    /*  MyApp persists data in the browser's local storage            */
+    /*  The below code relates to getting data in/out of localStorage */
+    /******************************************************************/
+
+    //  Define the keys for storing data
     const storage = {
         formData: 'config',
         sessionData: 'session'
@@ -40,6 +61,38 @@ const MyApp = () => {
         localStorage.removeItem(key)
     }
 
+    /****************************************************************/
+    /*  Modal popups functions                                      */
+    /****************************************************************/
+
+    //  Function to show a message in a modal window
+    const showModal = (title, message, color) => {
+
+        //  Set the title
+        let mTitle = document.getElementById(modal.title);
+        mTitle.innerText = title
+        
+        //  Set the message
+        let mMessage = document.getElementById(modal.message);
+        mMessage.innerText = message;
+
+        //  Show the modal window
+        let mModal = document.getElementById(modal.container);
+        mModal.classList.add('open');
+    }
+
+    //  Function to hide the modal window
+    const hideModal = () => {
+        
+        //  Hide  the modal window
+        let mModal = document.getElementById(modal.container);
+        mModal.classList.remove('open');
+    }
+
+    /****************************************************************/
+    /*  Helper functions                                            */
+    /****************************************************************/
+
     //  Helper function to generate headers for Fetch
     const getHeaders = (isImage=false) => {
         let myHeaders = new Headers();
@@ -58,6 +111,10 @@ const MyApp = () => {
             parent.removeChild(parent.firstChild);
         }
     }
+
+    /****************************************************************/
+    /*  Event handler functions                                     */
+    /****************************************************************/
 
     //  OnClick of Section 1's save button
     const saveConfig = async (event) => {
@@ -80,13 +137,24 @@ const MyApp = () => {
         let response = await fetch('/api/auth', { method:'post', body: JSON.stringify(data), headers:getHeaders() })
         let results = await response.json();
 
-        //  Store the form & session data in localstorage
-        setStorage(storage.formData, data);
-        setStorage(storage.sessionData, results)
+        //  Handle errors
+        if (response.status !== 200) {
+            //  This web app returned a status other than OK
+            showModal(title='Step 1: Authentication', message=response.statusText);
+        } else if (results.error){
+            //  There was a problem communicating with Tableau's REST API
+            showModal(title='Step 1: Authentication', message=results.error)
+        } else {
+            /*  Successful API call                 */
 
-        //  Open the next section
-        let section2radio = document.getElementById(section2.input);
-        section2radio.checked = true;
+            //  Store the form & session data in localstorage
+            setStorage(storage.formData, data);
+            setStorage(storage.sessionData, results)
+
+            //  Open the next section
+            let section2radio = document.getElementById(section2.input);
+            section2radio.checked = true;
+        }        
     }
 
     //  OnClick of Section 2's search button
@@ -115,33 +183,45 @@ const MyApp = () => {
         let response = await fetch('/api/search', {method:'post',body: JSON.stringify(data), headers:getHeaders()})
         let results = await response.json();
 
-        //  Clear out any old list
-        let table = document.getElementById(section2.tableBody);
-        removeAllChildNodes(table);
+        //  Handle errors
+        if (response.status !== 200) {
+            //  This web app returned a status other than OK
+            showModal(title='Step 2: Select a Dashboard', message=response.statusText);
+        } else if (results.error){
+            //  There was a problem communicating with Tableau's REST API
+            showModal(title='Step 2: Select a Dashboard', message=results.error)
+        } else {
 
-        //  Populate a new list, based on the search results
-        results.forEach(view => {
-            
-            //  Create the HTML elements for each column
-            let c1 = document.createElement('td');
-            c1.textContent = view.content.title;
-            let c2 = document.createElement('td');
-            c2.textContent = view.content.containerName;
-            let c3 = document.createElement('td');
-            c3.textContent = view.content.ownerName;
+            /*  Successful API call                 */
 
-            //  Create the HTML element for the whole row
-            let row = document.createElement('tr');
-            row.appendChild(c1);
-            row.appendChild(c2);
-            row.appendChild(c3);
-            row.attributes['dashboardId'] = view.content.luid;
-            row.attributes['dashboardTitle'] = view.content.title;
-            row.onclick = selectDashboard;
+            //  Clear out any old list
+            let table = document.getElementById(section2.tableBody);
+            removeAllChildNodes(table);
 
-            //  Append the row to the table
-            table.appendChild(row)
-        });
+            //  Populate a new list, based on the search results
+            results.forEach(view => {
+                
+                //  Create the HTML elements for each column
+                let c1 = document.createElement('td');
+                c1.textContent = view.content.title;
+                let c2 = document.createElement('td');
+                c2.textContent = view.content.containerName;
+                let c3 = document.createElement('td');
+                c3.textContent = view.content.ownerName;
+
+                //  Create the HTML element for the whole row
+                let row = document.createElement('tr');
+                row.appendChild(c1);
+                row.appendChild(c2);
+                row.appendChild(c3);
+                row.attributes['dashboardId'] = view.content.luid;
+                row.attributes['dashboardTitle'] = view.content.title;
+                row.onclick = selectDashboard;
+
+                //  Append the row to the table
+                table.appendChild(row)
+            });
+        }
 
         //  Hide the loading image
         loading.className = '';
@@ -179,22 +259,37 @@ const MyApp = () => {
         let response = await fetch('/api/getDashboard', {method:'post',body: JSON.stringify(data), headers:getHeaders()})
         let results = await response.text();
 
-        //  Populate the image in Section 3' <img>
-        let section3image = document.getElementById(section3.img);
-        section3image.src = results;
+        //  Handle errors
+        if (response.status !== 200) {
+            //  This web app returned a status other than OK
+            showModal(title='Step 3: Display dashboard as Image', message=response.statusText);
+        } else if (results.error){
+            //  There was a problem communicating with Tableau's REST API
+            showModal(title='Step 3: Display dashboard as Image', message=results.error)
+        } else {
 
-        //  Populate the dashboard's title
-        let section3title = document.getElementById(section3.title);
-        section3title.innerText = dashboardTitle;
+            /*  Successful API call                 */
+
+            //  Populate the image in Section 3' <img>
+            let section3image = document.getElementById(section3.img);
+            section3image.src = results;
+
+            //  Populate the dashboard's title
+            let section3title = document.getElementById(section3.title);
+            section3title.innerText = dashboardTitle;
+
+            //  Open section 3
+            let section3radio = document.getElementById(section3.input);
+            section3radio.checked = true;
+        }
 
         //  Hide the loading image
         loading.className = '';
-
-        //  Open section 3
-        let section3radio = document.getElementById(section3.input);
-        section3radio.checked = true;
     }
 
+    /****************************************************************/
+    /*  Public functions to expose                                  */
+    /****************************************************************/
     return {
 
         //  Function to run when the web app first loads
@@ -212,13 +307,17 @@ const MyApp = () => {
             let section2form= document.getElementById(section2.form);
             section2form.onsubmit = search;
 
+            //  Add event handler for closing the modal window
+            let modalBackground= document.getElementById(modal.background);
+            modalBackground.onclick = hideModal;
+
             //  Clear any saved info from a previes session
             delStorage(storage.sessionData)
 
             //  Retrieve any settings from local storage
             let storedSettings = getStorage(storage.formData);
             if (storedSettings){
-                //  Populate the form in section 1
+                //  User has filled out this form (section 1) before, populate values from localStorage
                 let form = document.getElementById(section1.form);
                 form.elements['tableauUrl'].value = storedSettings.tableauUrl;
                 form.elements['siteName'].value = storedSettings.siteName;

@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
 const tableauHelper = require('./tableau-helper');
 
 //  REST API endpoint for authenticating to Tableau
@@ -31,7 +30,6 @@ router.post('/auth', async (req, res) => {
         //  All went well, send a response
         res.send(tableauLogin)
     } catch (error) {
-        console.log(error)
         res.send({
             error: error
         })
@@ -65,7 +63,6 @@ router.post('/search', async (req, res) => {
         //  All went well, send a response
         res.send(dashboards)
     } catch (error) {
-        console.log(error)
         res.send({
             error: error
         })
@@ -105,7 +102,6 @@ router.post('/getDashboard', async (req, res) => {
         res.send(image);
 
     } catch (error) {
-        console.log(error)
         res.send({
             error: error
         })
