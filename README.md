@@ -12,12 +12,12 @@ When you open this web app in a browser, you will be prompted for some tableau d
 
 ![Config details screenshot](screenshots/config-details.png)
 
-You will also need a personal access token, details for getting this are available in our [documentation](https://help.tableau.com/current/server/en-us/security_personal_access_tokens.htm).  When ready, click the *AUTHENTICATE* button.  This will use the [SignIn](https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref_authentication.htm#sign_in) endpoint to authenticate your user and return an API token.  This app stores you config details in LocalStorage, so you don't have to enter your details every time you refresh the page.
+You will also need a personal access token, details for getting this are available in our [documentation](https://help.tableau.com/current/server/en-us/security_personal_access_tokens.htm).  When ready, click the AUTHENTICATE button.  This will use the [SignIn](https://help.tableau.com/current/api/rest_api/en-us/REST/rest_api_ref_authentication.htm#sign_in) endpoint to authenticate your user and return an API token.  This app stores your config details in LocalStorage, so you don't have to enter your details every time you refresh the page.
 
 ### Step 2: Select a Dashboard
 ![Step 2 Image](screenshots/section2.png)
 
-You should see a search bar, so just type in some search terms and click the *SEARCH* button.  This uses Tableau's [Content Exploration](https://help.tableau.com/current/api/rest_api/en-us/REST/TAG/index.html#operation/getSearch) endpoint to mimic the searchbar on Tableau Server/Cloud. This web app automatically adds a filter for `ContentType=View` and further filters the resultset for `sheetType=Dashboard`.  Each result will be displayed in the table below, just click on a row to view the dashboard.
+You should see a search bar, so just type in some search terms and click the SEARCH button.  This uses Tableau's [Content Exploration](https://help.tableau.com/current/api/rest_api/en-us/REST/TAG/index.html#operation/getSearch) endpoint to mimic the searchbar on Tableau Server/Cloud. This web app automatically adds a filter for `ContentType=View` and further filters the result set for `sheetType=Dashboard`.  Each result will be displayed in the table below, just click on a row to view the dashboard.
 
 ### Step 3: Embed the dashboard as an Image
 ![Step 3 Image](screenshots/section3.png)
