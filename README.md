@@ -1,8 +1,6 @@
 # Embedding Tableau dashboards as Images
 Sample web app that shows how to embed tableau dashboards as static images.  Fully interactive dashboards can be embedded using Tableau's [Embedding API](https://help.tableau.com/current/api/embedding_api/en-us/index.html), but that requires the use of iframes.  If you are blocked from embedding using iframes, then you can reference this project to learn how to embed using static images via the REST API instead.  Static images aren't as good as the fully embedded experience, but you can click on the image to just open the dashboard in a new tab.
 
-[Live Demo](https://tableau-embed-image-example.herokuapp.com/)
-
 # How to use this app
 
 ### Step 1: Configuration
